@@ -23,7 +23,7 @@
       + var(--composebox-margin-bottom)
     );
   /* Max width for tab and side-panel mode (from Figma) */
-  --composebox-container-max-width: 691px;
+  --composebox-max-width: 691px;
   /* Shared sizing between voice cancel and regular cancel buttons. */
   --composebox-cancel-button-size: 40px;
   --composebox-icon-menu-bottom: 12px;
@@ -80,17 +80,15 @@
   background: linear-gradient(to top,
     rgba(var(--search-background-color-rgb), 1)
     var(--composebox-container-height), transparent);
-  display: flex;
-  flex-direction: column;
   height: calc(var(--composebox-container-height) + 36px);
   inset-block-end: 0;
   justify-content: flex-end;
-  max-width: var(--composebox-container-max-width);
   min-height: var(--composebox-collapsed-height);
+  position: fixed;
   /* Do not set pointer-events to none; is inherited by
    * whole composebox + buttons. Width var taken from parent.
    */
-  width: var(--composebox-container-width, 100%);
+  width: 100%;
 }
 
 /* When the composebox is focused, make the background color
@@ -113,13 +111,54 @@
   --composebox-width: calc(100% - 30px); /* 15px on each side */
   --expanded-border-radius: 24px;
   --input-bottom-spacing: 16px;
+  --inset-start-indent_: 20px;
   --text-input-left-spacing: 24px;
   --text-input-top-spacing: 16px;
 
   box-shadow: none;
+  inset-inline-start: var(--inset-start-indent_);
   margin-bottom: var(--composebox-margin-bottom);
-  position: relative;
-  width: var(--composebox-width);
+  position: absolute;
+  /* 100% - (24px right indent + left indent), up to max width. */
+  width: calc(100% - (24px + var(--inset-start-indent_)));
+}
+
+/* TODO(crbug.com/466201452): Check this logic
+ * once Google.com AIM is RTL that this matches AIM.
+ */
+
+/* Make room for the side AIM menu panel. */
+@media (min-width: 480px) {
+  #composebox {
+    /* Google.com uses 96px for indent column, and 5px left padding.
+     * Aligns the input text of the composebox with the AIM thread.
+     */
+    --inset-start-indent_: 101px;
+  }
+}
+
+/* W/more space, indent further to match AIM. */
+@media (min-width: 1420px) {
+  #composebox {
+    /* At this width, indent column should be 280px + 5px left padding.
+     * Google.com AIM has 20 other 36px columns as "inset end space",
+     * with 20px gaps, which = 720px of cols, 21 * 20px = 420px of gaps.
+     * Combined, this is 1140px of fixed space.
+     * The first and last columns are 1fr, so the remaining fluid
+     * space is (100% - 1140px) / 2 since we are splitting between the
+     * 2 columns, which = 50% - 570px per flex column. Since at this
+     * breakpoint, we need at least 280px of left indentation to match
+     * the AIM thread, we do not start growing until flexible
+     * indentation space > 280px of minimum left indentation.
+     */
+    --inset-start-indent_: max(285px, calc(50% - 570px));
+  }
+}
+
+@media (min-width: 800px) {
+  #composebox {
+    max-width: var(--composebox-max-width);
+  }
 }
 
 #composebox::part(error-scrim) {
