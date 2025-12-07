@@ -67,6 +67,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationSkipLabel",
        IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL},
       {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
+      {"profileCustomizationInputTitle", IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE},
       {"profileCustomizationInputPlaceholder",
        IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER},
       {"profileCustomizationInputErrorMessage",
