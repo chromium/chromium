@@ -449,6 +449,12 @@
           =1 {{domain} and 1 other}
           other {{domain} and {count} others}}
       </message>
+      <message name="IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL" desc="The contextual cue label for the Ask Gemini Chip [iOS only]">
+        Get insights with Gemini
+      </message>
+      <message name="IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT" desc="Prefill prompt passed to the floaty when the Ask Gemini Chip is tapped [iOS only]">
+        Give me a one-line summary and useful insights beyond this page. Use a concise, casual tone. Limit to 100 words.
+      </message>
       <message name="IDS_IOS_AUTOFILL_ACCNAME_ALL_AUTOFILL_DATA" desc="Title of the the button in the keyboard accessory shown when filling out forms used to open the expanded view to see all autofill data when on iPad. [Length: unlimited] [iOS only]">
         All Autofill
       </message>

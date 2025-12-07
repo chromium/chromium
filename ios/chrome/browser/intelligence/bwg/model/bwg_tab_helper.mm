@@ -44,12 +44,14 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "mojo/public/cpp/bindings/remote.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -610,9 +612,8 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
   } else {
     UIImage* badge_image =
         [BWGUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
-    NSString* cue_label = base::SysUTF8ToNSString(
-        latest_load_contextual_cueing_metadata_->cueing_configurations(0)
-            .cue_label());
+    NSString* cue_label =
+        l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL);
     LocationBarBadgeConfiguration* badge_config =
         [[LocationBarBadgeConfiguration alloc]
              initWithBadgeType:LocationBarBadgeType::kGeminiContextualCueChip
