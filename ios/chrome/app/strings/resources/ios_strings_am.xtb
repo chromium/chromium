@@ -1206,7 +1206,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5624637933505983014">ስምረትን አያብሩ</translation>
 <translation id="5626245204502895507">ፋይሉ በዚህ ጊዜ ሊወርድ አልቻለም።</translation>
 <translation id="562753339521713441">የደህንነት ፍተሻን አሂድ</translation>
-<translation id="5628388627414062173">{count,plural, =1{በንባብ ዝርዝርዎ ላይ {count} ገፅ}one{በንባብ ዝርዝርዎ ላይ {count} ገፅ}other{በንባብ ዝርዝርዎ ላይ {count} ገፆች}}</translation>
+<translation id="5628388627414062173">{count,plural, =1{በንባብ ዝርዝርዎ ላይ {count} ገፅ}one{በንባብ ዝርዝርዎ ላይ {count} ገጽ}other{በንባብ ዝርዝርዎ ላይ {count} ገጾች}}</translation>
 <translation id="5632194969640946913">ምርቶች፣ ቦታዎች እና ጽሑፎችን ለማሰስ በማንኛውም ገፅ ላይ የሚመለከቱትን ሲያስሱ እና ሲፈልጉ የበለጠ ይወቁ።</translation>
 <translation id="5632485077360054581">እንዴት እንደሆነ አሳየኝ</translation>
 <translation id="5633237939819267663">{count,plural, =1{ዕልባት ወደ «{title}» ተቀምጧል}one{{count} ዕልባት ወደ «{title}» ተቀምጧል}other{{count} ዕልባቶች ወደ «{title}» ተቀምጠዋል}}</translation>

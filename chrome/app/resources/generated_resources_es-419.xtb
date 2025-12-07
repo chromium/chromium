@@ -4270,7 +4270,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="389313931326656921">Asignar interruptor a "Siguiente"</translation>
 <translation id="3893268973182382220">No se puede cargar este panel ahora mismo</translation>
 <translation id="3893536212201235195">Leer y cambiar la configuración de accesibilidad</translation>
-<translation id="3893630138897523026">ChromeVox (comentarios por voz)</translation>
+<translation id="3893630138897523026">ChromeVox (descripciones por voz)</translation>
 <translation id="3893764153531140319"><ph name="DOWNLOADED_SIZE" />/<ph name="DOWNLOAD_SIZE" /></translation>
 <translation id="3893858854379998374">Para guardar favoritos en tu cuenta, borra los que no uses</translation>
 <translation id="3894427358181296146">Agregar carpeta</translation>
@@ -6270,7 +6270,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5294097441441645251">Debe comenzar con una letra minúscula o un guion bajo</translation>
 <translation id="5294618183559481278">Tu <ph name="DEVICE_TYPE" /> utiliza un sensor integrado para detectar personas que estén frente a tu dispositivo. Toda la información se procesa automáticamente en tu dispositivo y, luego, se borra. Los datos de sensores nunca se envían a Google. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5295349205180144885">Nombre del grupo de pestañas: <ph name="NAME" /></translation>
-<translation id="5296350763804564124">Escucha comentarios por voz para usar el dispositivo sin mirar la pantalla. Los comentarios en braille están disponibles con un dispositivo conectado.</translation>
+<translation id="5296350763804564124">Escucha descripciones por voz para usar el dispositivo sin mirar la pantalla. Las descripciones en braille están disponibles con un dispositivo conectado.</translation>
 <translation id="5296536303670088158">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
 <translation id="5297005732522718715">Actualizar la configuración de la conexión mediante dispositivo móvil</translation>
 <translation id="5297082477358294722">Se guardó la contraseña. Puedes ver y administrar las contraseñas guardadas en tu <ph name="SAVED_PASSWORDS_STORE" />.</translation>
@@ -11943,7 +11943,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
-<translation id="9192019773545828776">Escucha comentarios por voz para usar el dispositivo sin mirar la pantalla. Los comentarios en braille están disponibles con un dispositivo conectado. Usa Ctrl + Alt + Z para activar y desactivar ChromeVox. Usa Búsqueda + flecha hacia la izquierda o flecha hacia la derecha para navegar. Usa Búsqueda + barra espaciadora para seleccionar (activar).</translation>
+<translation id="9192019773545828776">Escucha descripciones por voz para usar el dispositivo sin mirar la pantalla. Las descripciones en braille están disponibles con un dispositivo conectado. Usa Ctrl + Alt + Z para activar y desactivar ChromeVox. Usa Búsqueda + flecha hacia la izquierda o flecha hacia la derecha para navegar. Usa Búsqueda + barra espaciadora para seleccionar (activar).</translation>
 <translation id="9195969368671142407">Cuando tu organización limita el guardado en tu Cuenta de Google, no puedes compartir grupos de pestañas ni unirte a ellos</translation>
 <translation id="919686179725692564">Más información sobre cómo realizar una copia de seguridad de las apps</translation>
 <translation id="9199503643457729322">Haz clic para salir de la Guía de privacidad.</translation>
@@ -12078,7 +12078,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="988978206646512040">No se permite una frase de contraseña vacía</translation>
 <translation id="992032470292211616">Las extensiones, las aplicaciones y los temas pueden dañar tu dispositivo. ¿Confirmas que quieres continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
-<translation id="992592832486024913">Inhabilitar ChromeVox (comentarios por voz)</translation>
+<translation id="992592832486024913">Inhabilitar ChromeVox (descripciones por voz)</translation>
 <translation id="992653586748191655"><ph name="NUM" /> grupos de pestañas sugeridos</translation>
 <translation id="992778845837390402">La copia de seguridad de Linux está en curso</translation>
 <translation id="993540765962421562">La instalación está en curso</translation>

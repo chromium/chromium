@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">ביטלת את ההרשמה לאתר <ph name="SITE_NAME" />. תוצג שאלה נוספת בביקור הבא שלך.</translation>
 <translation id="1340839264183302272">יציאה מהקבוצה</translation>
 <translation id="1342886103232377846">‏כדי לבדוק אם יש סיסמאות שנחשפו, צריך לעבור למנהל הסיסמאות של Google</translation>
+<translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1344653310988386453">עליך לכלול קישור לטקסט המודגש</translation>
 <translation id="1347468774581902829">ניהול פעילות</translation>
 <translation id="1355088659320425659">היסטוריה וכרטיסיות</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">כברירת מחדל, מתבקשים אתרים שמותאמים למחשב</translation>
 <translation id="4162867837470729563">רשימת אפשרויות השיתוף נפתחה בגובה מלא.</translation>
 <translation id="4170011742729630528">השירות אינו זמין. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="4170577491341606575">הנתונים שלך בדרך…</translation>
 <translation id="4177222230309051052">הוספת כל הסימניות</translation>
 <translation id="4177501066905053472">נושאים של מודעות</translation>
 <translation id="417865198503699526">כאן ניתן לחפש הגדרה</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">ברירת המחדל של המערכת</translation>
 <translation id="7117485132243600300">ניהול התוכן שבמעקב שלך והמלצות לנושאים ולחיפושים</translation>
 <translation id="7119984597597798764">סגירה של <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">‏כניסה ל-Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{נבדקו הרשאות של אתר אחד}one{נבדקו ההרשאות של # אתרים}two{נבדקו ההרשאות של # אתרים}other{נבדקו ההרשאות של # אתרים}}</translation>
 <translation id="7138678301420049075">אחר</translation>
 <translation id="7140829094791862589">מיון לפי סדר ידני</translation>

@@ -1914,6 +1914,7 @@
 <translation id="2287617382468007324">‏כתובת IPP להדפסה</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{כדי להגן על הנתונים שלך, הוסרו ההרשאות מאתר שלא ביקרת בו בזמן האחרון}one{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא ביקרת בהם בזמן האחרון}two{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא ביקרת בהם בזמן האחרון}other{כדי להגן על הנתונים שלך, הוסרו הרשאות מאתרים שלא ביקרת בהם בזמן האחרון}}</translation>
 <translation id="2287944065963043964">מסך התחברות</translation>
+<translation id="2289567621059034186">כרטיסייה חדשה למטה</translation>
 <translation id="2290615375132886363">כפתורי ניווט בטאבלט</translation>
 <translation id="2290703778620332549">להחליף את הקבוצה הקיימת או ליצור קבוצה חדשה?</translation>
 <translation id="2291452790265535215">אפשר לנסות להיעזר בחלונית הצדדית לשמירת סימניות, תהליכים ועוד</translation>
@@ -3278,6 +3279,7 @@
 <translation id="322708765617468434">תמיד אפשר להוסיף אדם נוסף למכשיר אחרי ההגדרה. כל משתמש יכול להתאים אישית את חוויית המשתמש שלו ולהגן על פרטיות הנתונים.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3227701057281907159">תיקון</translation>
+<translation id="3228962656492373217">סגירת הכרטיסיות שבהמשך</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{‏אפשר להסיר את התוסף, או להחליף אותו בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />.}one{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}two{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}other{‏אפשר להסיר את התוספים, או להחליף אותם בתוספים דומים מ<ph name="BEGIN_LINK" />חנות האינטרנט של Chrome<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">צריך לבדוק שהתאריך תקין</translation>
 <translation id="3230539834943294477">עיון במאמרי עזרה או חיפוש תמיכה במכשיר</translation>
@@ -5014,6 +5016,7 @@
 <translation id="4404843640767531781">האפליקציה <ph name="APP_NAME" /> נחסמה על ידי ההורה שלך. יש לבקש רשות מההורה כדי להשתמש באפליקציה הזו.</translation>
 <translation id="4405117686468554883">‏‎*.jpeg‏, ‎‏‎*.jpg‏, ‎*.png</translation>
 <translation id="4405224443901389797">העברה אל…</translation>
+<translation id="4405580203042711503">כרטיסייה חדשה למטה</translation>
 <translation id="4405781821077215583">הגדלה או הקטנה של פריטים במסך, כולל טקסט</translation>
 <translation id="4406308048672435032">אפשר להשבית את הכרטיסייה הזו או לרענן אותה כדי לראות שוב את הרשימה המלאה</translation>
 <translation id="4406881185911439342">התמקדות בקבוצה</translation>
@@ -6732,6 +6735,7 @@
 <translation id="5609231933459083978">נראה שהיישום אינו חוקי.</translation>
 <translation id="5610867721023328944">אפשר לנסות שוב או לבחור מתוך העיצובים שמוצגים למטה.</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
+<translation id="5611474372949142946">סגירת הכרטיסיות שבהמשך</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />,‏ <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">הודעת משתמש</translation>
 <translation id="5614553682702429503">לשמור את הסיסמה?</translation>
