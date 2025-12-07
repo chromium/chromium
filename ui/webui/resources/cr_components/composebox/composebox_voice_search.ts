@@ -235,7 +235,7 @@ export class ComposeboxVoiceSearchElement extends
           this.fire('voice-search-cancel');
         }
         return;
-      case State.RESULT_FINAL:
+      case State.RESULT_FINAL:  // Query already submitted if is this state
         return;
       default:
         return;
@@ -254,17 +254,22 @@ export class ComposeboxVoiceSearchElement extends
     }
   }
 
+  protected voiceModeEndCleanup_() {
+    this.voiceRecognition_.abort();
+    this.resetState_();
+  }
+
   private onFinalResult_() {
     if (!this.finalResult_) {
       return;
     }
     this.state_ = State.RESULT_FINAL;
     this.fire('voice-search-final-result', this.finalResult_);
+    this.voiceModeEndCleanup_();
   }
 
   protected onCloseClick_() {
-    this.voiceRecognition_.abort();
-    this.resetState_();
+    this.voiceModeEndCleanup_();
     this.fire('voice-search-cancel');
   }
 

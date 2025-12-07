@@ -79,6 +79,8 @@
   margin-inline-start: 16px;
   position: absolute;
   top: var(--composebox-cancel-button-top, 12px);
-  /* Uses the same transitions as the submit button so they are in sync. */
-  transition: var(--submit-enabled-transition);
+  /* Uses the same transitions as the submit button from
+   * parent so they are in sync.
+   */
+  transition: var(--submit-enabled-transition, 255ms);
 }

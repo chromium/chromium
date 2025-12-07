@@ -208,8 +208,8 @@
 
 #composebox[show-submit_][submit-enabled_]::part(lens-icon) {
  inset-inline-end: calc(var(--composebox-submit-container-size)
-     + var(--icon-menu-spacing)
-     + var(--composebox-submit-container-inline-end));
+      + var(--icon-menu-spacing)
+      + var(--composebox-submit-container-inline-end));
 }
 
 #composebox:not([expanding_])::part(cancel),
@@ -293,4 +293,45 @@
 :host(:not([is-composebox-focused])) #composeboxContainer #composebox::part(dropdown),
 #composeboxContainer:has(#composebox:not([show-dropdown_])) #composebox::part(dropdown) {
   display: none;
+}
+
+#composebox[show-submit_][submit-enabled_]::part(voice-icon) {
+  inset-inline-end: calc(var(--composebox-submit-container-size)
+      + var(--icon-menu-button-size)
+      + 2 * var(--icon-menu-spacing)
+      + var(--composebox-submit-container-inline-end));
+}
+
+#composebox::part(voice-icon) {
+  --cr-icon-button-icon-size: var(--icon-menu-icon-size);
+  --cr-icon-button-size: var(--icon-menu-button-size);
+  bottom: var(--composebox-icon-menu-bottom);
+  inset-inline-end: calc(
+      var(--icon-menu-button-size)
+      + var(--icon-menu-spacing)
+      + var(--composebox-last-icon-inline-end));
+  position: absolute;
+}
+
+#composebox::part(voice-close-button) {
+ --cr-icon-button-size: var(--composebox-cancel-button-size);
+ inset-inline-end: var(--cancel-button-inline-end);
+ top: var(--cancel-button-top);
+}
+
+#composebox[in-voice-search-mode_]::part(composebox-background)::before {
+ background-color: white;
+}
+
+#composebox::part(composebox-background)::before {
+ transition: background-color 400ms ease-in-out;
+}
+
+#composebox {
+ /* Fast out (start), slow in (end) box shadow transition. */
+ transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+#composebox[in-voice-search-mode_] {
+ box-shadow: 2px 17px 18px -10px rgba(0, 0, 0, 0.05);
 }
