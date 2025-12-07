@@ -1927,9 +1927,10 @@ void CloudPolicyClient::OnPromotionEligibilityDetermined(
     NotifyClientError();
   }
 
+  RemoveJob(result.job);
+
   std::move(callback).Run(
       result.response.get_user_eligible_promotions_response());
-  RemoveJob(result.job);
 }
 
 void CloudPolicyClient::NotifyPolicyFetched() {
