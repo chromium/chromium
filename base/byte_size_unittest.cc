@@ -7,6 +7,7 @@
 #include <limits>
 #include <sstream>
 
+#include "base/byte_count.h"
 #include "base/rand_util.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,6 +122,24 @@ TEST(ByteSizeDeathTest, ConstructionDeltaOutOfRange) {
     BASE_EXPECT_DEATH(ByteSizeDelta(-1).AsByteSize(), "");
     BASE_EXPECT_DEATH(ByteSize::FromByteSizeDelta(ByteSizeDelta::Min()), "");
     BASE_EXPECT_DEATH(ByteSizeDelta::Min().AsByteSize(), "");
+  }
+}
+
+TEST(ByteSizeTest, ConstructionByteCount) {
+  EXPECT_EQ(ByteSize::FromByteCount(ByteCount()), ByteSize());
+  EXPECT_EQ(ByteSize::FromByteCount(ByteCount(7)), ByteSize(7u));
+  EXPECT_EQ(ByteSize::FromByteCount(ByteCount::Max()), ByteSize::Max());
+
+  // Make sure non-const expressions are accepted.
+  EXPECT_EQ(ByteSize::FromByteCount(ByteCount(RunTimeNum(3))), ByteSize(3u));
+}
+
+TEST(ByteSizeDeathTest, ConstructionByteCountOutOfRange) {
+  BASE_EXPECT_DEATH(ByteSize::FromByteCount(ByteCount(-1)), "");
+  if (kRunAllDeathTests) {
+    BASE_EXPECT_DEATH(
+        ByteSize::FromByteCount(ByteCount(std::numeric_limits<int64_t>::min())),
+        "");
   }
 }
 
@@ -967,6 +986,23 @@ TEST(ByteSizeDeltaTest, ConstructionByteSize) {
   ByteSize bytes(RunTimeNum(3u));
   EXPECT_EQ(ByteSizeDelta::FromByteSize(bytes), ByteSizeDelta(3));
   EXPECT_EQ(bytes.AsByteSizeDelta(), ByteSizeDelta(3));
+}
+
+TEST(ByteSizeDeltaTest, ConstructionByteCount) {
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount()), ByteSizeDelta());
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount(7)), ByteSizeDelta(7));
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount::Max()),
+            ByteSizeDelta::Max());
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount(-7)), ByteSizeDelta(-7));
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(
+                ByteCount(std::numeric_limits<int64_t>::min())),
+            ByteSizeDelta::Min());
+
+  // Make sure non-const expressions are accepted.
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount(RunTimeNum(3))),
+            ByteSizeDelta(3));
+  EXPECT_EQ(ByteSizeDelta::FromByteCount(ByteCount(RunTimeNum(-3))),
+            ByteSizeDelta(-3));
 }
 
 TEST(ByteSizeDeltaTest, ConstructionMin) {
